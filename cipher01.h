@@ -6,9 +6,6 @@
 #ifndef CIPHER01_H
 #define CIPHER01_H
 
-#include <algorithm> 
-using namespace std;
-
 /********************************************************************
  * STRUCT KEY
  * This struct is used to hold the two keys for the affine cipher
@@ -98,12 +95,20 @@ public:
         const std::string& password)
     {
         std::string cipherText;
+
+        // find a Affine password from a textual password
         Key key = keysFromPassword(password);
+
+        // convert the plaintext one character at a time
         for (const char* p = plainText.c_str(); *p; p++)
         {
+            // convert the character into an index we can work with
             int index = indexFromCharacter(*p);
+
+            // send the index into the ciphertext
             cipherText += characterFromIndex(((index * key.a) + key.b) % sizeAlphabet);
         }
+
         return cipherText;
     }
 
@@ -115,13 +120,22 @@ public:
         const std::string& password)
     {
         std::string plainText;
+
+        // find a Affine password from a textual password
         Key key = keysFromPassword(password);
+
+        // convert the plaintext one character at a time
         for (const char* c = cipherText.c_str(); *c; c++)
         {
+           // convert the character into an index we can work with
            int index = indexFromCharacter(*c);
+
            int p = (modInverse(key.a, sizeAlphabet) * (index - key.b)) % sizeAlphabet;
+
+           // send the index into the plaintext
            plainText += characterFromIndex(p < 0 ? p + sizeAlphabet : p);
         }
+
         return plainText;
     }    
 private:
