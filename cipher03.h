@@ -132,10 +132,10 @@ private:
      *************************************************/
     int indexFromCharacter(char letter)
     {
-        int index = 0;
-        if (letter <= valueMaximum && letter >= valueMinimum)
-            index = (int)letter - valueMinimum;
-        return index;
+        if (letter > valueMaximum || letter < valueMinimum)
+            return 0;
+        else
+            return (int)(letter - valueMinimum);
     }
 
     /**************************************************
@@ -144,8 +144,10 @@ private:
      *************************************************/
     char characterFromIndex(int index)
     {
-        index += valueMinimum;
-        return (char)(index);
+        if (index >= 0 && index < sizeAlphabet)
+            return (char)(index + valueMinimum);
+        else
+            return ' ';
     }
 
     /**********************************************************
