@@ -146,7 +146,6 @@ private:
     int indexFromCharacter(char letter)
     {
         int index = 0;
-        // return the value
         if (letter <= valueMaximum && letter >= valueMinimum)
             index = (int)letter - valueMinimum;
         return index;
