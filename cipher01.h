@@ -60,7 +60,7 @@ public:
         str += "   key <- keysFromPassword(password)\n";
         str += "   FOR p is all values of plainText\n";
         str += "      index <- (indexFromCharacter(*p))\n";
-        str += "      cipherText += characterFromIndex(((index * key.a) + key.b) % sizeAlphabet)\n";
+        str += "      cipherText += characterFromIndex(((index * key.a) + key.b) % size)\n";
         str += "   RETURN cipherText\n\n";
 
         // The decrypt pseudocode
@@ -68,20 +68,20 @@ public:
         str += "   key <- keysFromPassword(password)\n";
         str += "   FOR c is all values of cipherText\n";
         str += "      index <- (indexFromCharacter(*c))\n";
-        str += "      p <- (modInverse(key.a, sizeAlphabet) * (index - key.b)) % sizeAlphabet\n";
-        str += "      plainText += characterFromIndex(p less than 0 ? if yes: p + sizeAlphabet. if no: p)\n";
+        str += "      p <- ((modInverse(key.a, size) * (index - key.b) % size) + size) % size\n";
+        str += "      plainText += characterFromIndex(p)\n";
         str += "   RETURN plainText\n\n";
 
         // Helper routine
         str += "keysFromPassword(password)\n";
         str += "   FOR p is all values of password\n";
         str += "     keyset += indexFromCharacter(*p)\n";
-        str += "   key.a <- (keyset / 2) % sizeAlphabet\n";
+        str += "   key.a <- (keyset / 2) % size\n";
         str += "   i <- 0\n";
-        str += "   WHILE gcd(key.a - i, sizeAlphabet) does not equal 1\n";
+        str += "   WHILE gcd(key.a - i, size) does not equal 1\n";
         str += "     i += 1\n";
         str += "   key.a <- key.a - i\n";
-        str += "   key.b <- keyset % sizeAlphabet\n";
+        str += "   key.b <- keyset % size\n";
         str += "   RETURN key\n\n";
 
         return str;
@@ -130,10 +130,10 @@ public:
            // convert the character into an index we can work with
            int index = indexFromCharacter(*c);
 
-           int p = (modInverse(key.a, sizeAlphabet) * (index - key.b)) % sizeAlphabet;
+           int p = ((modInverse(key.a, sizeAlphabet) * (index - key.b) % sizeAlphabet) + sizeAlphabet) % sizeAlphabet;
 
            // send the index into the plaintext
-           plainText += characterFromIndex(p < 0 ? p + sizeAlphabet : p);
+           plainText += characterFromIndex(p);
         }
 
         return plainText;
