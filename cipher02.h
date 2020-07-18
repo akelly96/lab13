@@ -5,7 +5,6 @@
 ********************************************************************/
 #ifndef CIPHER02_H
 #define CIPHER02_H
-#pragma warning(disable : 4996)
 
 struct Index
 {
@@ -21,8 +20,8 @@ class Cipher02 : public Cipher
 public:
     virtual std::string getPseudoAuth() { return "Ryan Blomquist"; }
     virtual std::string getCipherName() { return "Playfair Cipher"; }
-    virtual std::string getEncryptAuth() { return "Austin Kelly"; }
-    virtual std::string getDecryptAuth() { return "decrypt author"; }
+    virtual std::string getEncryptAuth() { return "Ryan Blomquist"; }
+    virtual std::string getDecryptAuth() { return "Ryan Blomquist"; }
 
     /***********************************************************
      * GET CIPHER CITATION
@@ -30,7 +29,11 @@ public:
      ***********************************************************/
     virtual std::string getCipherCitation()
     {
-        return std::string("citation");
+        std::string s;
+        s += "crypto.interactive-maths.com (2013), ";
+        s += "\"Playfair Cipher\', \n   retrieved: ";
+        s += "https://crypto.interactive-maths.com/playfair-cipher.html";
+        return s;
     }
 
     /**********************************************************
@@ -43,29 +46,29 @@ public:
 
         // TODO: please format your pseudocode
         // The encrypt pseudocode
-        str = "key[6][6] <- GenerateKey(password)\n";
+        str = "key[5][5] <- GenerateKey(password)\n";
         str += "cipherText <- adjustText(plainText)\n";
         str += "for i < ciphertext.size i +=2\n";
-        str += "   if Arow == Brow";
-        str += "      digram.A = keyA[col][(row +1) % 6]\n";
-        str += "      digram.B = keyB[col][(row +1) % 6]\n";
-        str += "   else if Acol == Bcol";
-        str += "      digram.A = keyA[(col +1) % 6][row]\n";
-        str += "      digram.B = keyB[(col +1) % 6][row]\n";
+        str += "   if Arow == Brow\n";
+        str += "      digram.A = keyA[col][(row +1) % 5]\n";
+        str += "      digram.B = keyB[col][(row +1) % 5]\n";
+        str += "   else if Acol == Bcol\n";
+        str += "      digram.A = keyA[(col +1) % 5][row]\n";
+        str += "      digram.B = keyB[(col +1) % 5][row]\n";
         str += "   else\n";
         str += "      digram.A = keyB[col][keyA.row]\n";
         str += "      digram.B = keyA[col][keyB.row]\n";
 
 
         // The decrypt pseudocode
-        str += "key[6][6] <- GenerateKey(password)";
+        str += "key[5][5] <- GenerateKey(password)\n";
         str += "for i < ciphertext.size i +=2\n";
-        str += "   if Arow == Brow";
-        str += "      digram.A = keyA[col][(row -1) % 6]\n";
-        str += "      digram.B = keyB[col][(row -1) % 6]\n";
+        str += "   if Arow == Brow\n";
+        str += "      digram.A = keyA[col][(row -1) % 5]\n";
+        str += "      digram.B = keyB[col][(row -1) % 5]\n";
         str += "   else if Acol == Bcol";
-        str += "      digram.A = keyA[(col -1) % 6][row]\n";
-        str += "      digram.B = keyB[(col -1) % 6][row]\n";
+        str += "      digram.A = keyA[(col -1) % 5][row]\n";
+        str += "      digram.B = keyB[(col -1) % 5][row]\n";
         str += "   else\n";
         str += "      digram.A = keyB[col][keyA.row]\n";
         str += "      digram.B = keyA[col][keyB.row]\n";
@@ -84,7 +87,7 @@ public:
         const std::string& password)
     {
         std::string cipherText = plainText;
-        char key[6][6];
+        char key[5][5];
         GenerateKey(password, key);
         cipherText = alterCipher(cipherText, true);
         Index indexA;
@@ -95,13 +98,13 @@ public:
             indexB = getIndeces(key, cipherText[i + 1]);
             if (indexA.row == indexB.row)
             {
-                cipherText[i] = key[indexA.row][(indexA.col + 1) % 6];
-                cipherText[i + 1] = key[indexB.row][(indexB.col + 1) % 6];
+                cipherText[i] = key[indexA.row][(indexA.col + 1) % 5];
+                cipherText[i + 1] = key[indexB.row][(indexB.col + 1) % 5];
             }
             else if (indexA.col == indexB.col)
             {
-                cipherText[i] = key[(indexA.row + 1) % 6][indexA.col];
-                cipherText[i + 1] = key[(indexB.row + 1) % 6][indexB.col];
+                cipherText[i] = key[(indexA.row + 1) % 5][indexA.col];
+                cipherText[i + 1] = key[(indexB.row + 1) % 5][indexB.col];
             }
             else
             {
@@ -110,7 +113,6 @@ public:
             }
         }
         
-        // TODO - Add your code here
         return cipherText;
     }
 
@@ -122,7 +124,7 @@ public:
         const std::string& password)
     {
         std::string plainText = cipherText;
-        char key[6][6];
+        char key[5][5];
         GenerateKey(password, key);
         Index indexA;
         Index indexB;
@@ -180,52 +182,45 @@ public:
         //this is the last step of the decryption.
         //does not bring back spaces
         plainText = alterCipher(plainText, false);
-        // TODO - Add your code here
+
         return plainText;
     }
     /*********************************************************
     * remove duplicates
     * goes through a string and removes duplicate values
     *********************************************************/
-    std::string removeDuplicate(char str[], int n)
+    std::string removeDuplicate(std::string originalPassword, std::string password)
 
     {
         // Used as index in the modified string 
         int index = 0;
-        char temp[36] = { '\0' };
+        char temp[25] = { '\0' };
         // Traverse through all characters 
-        for (int i = 0; i < n; i++) {
+        for (int i = 0; i < originalPassword.size(); i++) {
 
             // Check if str[i] is present before it   
-            int j;
-            for (j = 0; j < i; j++)
-                if (str[i] == str[j])
+            for (int j = i + 1; j < password.size() - 1; j++)
+                if (originalPassword[i] == password[j])
+                {
+                    password.erase(j, 1);
                     break;
-
-            // If not present, then add it to 
-            // result. 
-            if (j == i && index < 36)
-                temp[index++] = str[i];
+                }
         }
-
-        return (std::string)temp;
+        return password;
     }
     /**********************************************************
     * Generate Key
     * generates the key to use in the encryption and decryption
     **********************************************************/
-    void GenerateKey(std::string password, char key[][6])
+    void GenerateKey(std::string password, char key[][5])
     {
-        char pass[256];
-        strcpy(pass, password.c_str());
-        password += "abcdefghijklmnopqrstuvwxyz`~!@#$%^&*?";
-        strcpy(pass, password.c_str());
-        std::string plain = removeDuplicate(pass, password.size());
-
+        std::string originalPassword = password;
+        password += "abcdefghiklmnopqrstuvwxyz";
+        std::string plain = removeDuplicate(originalPassword, password);
         int index = 0;
-        for (int col = 0; col < 6; col++)
+        for (int col = 0; col < 5; col++)
         {
-            for (int row = 0; row < 6; row++)
+            for (int row = 0; row < 5; row++)
             {
                 key[col][row] = plain[index++];
                 
@@ -252,24 +247,24 @@ public:
             {
                 if (i > 0 && (cipherText[i] == cipherText[i - 1]))
                 {
-                    text += 'q';
+                    text += 'x';
                 }
                 text += cipherText[i];
             }
             if (text.size() % 2 != 0)
             {
-                text += 'q';
+                text += 'x';
             }
         } // when you are decrypting the text
         else
         {
             for (int i = 0; i < len; i++)
             {
-                int index = cipherText.find('q', i);
-                //check if the last character is a q
-                if (i == len - 1 && cipherText[len - 1] == 'q')
+                int index = cipherText.find('x', i);
+                //check if the last character is a x
+                if (i == len - 1 && cipherText[len - 1] == 'x')
                 {
-                    //if so do not add the q to the string
+                    //if so do not add the x to the string
                 }
                 //check if the original string had two letters next to each other
                 else if (i == index && cipherText[i - 1] == cipherText[i + 1])
@@ -285,13 +280,15 @@ public:
         return text;
     }
 
-    Index getIndeces(char key[][6], char c)
+    Index getIndeces(char key[][5], char c)
     {
         Index index;
-        for (index.row = 0; index.row < 6; index.row++)
+        if (c == 'j') {
+            c = 'i';
+        }
+        for (index.row = 0; index.row < 5; index.row++)
         {
-
-            for (index.col = 0; index.col < 6; index.col++)
+            for (index.col = 0; index.col < 5; index.col++)
             {
                 if (key[index.row][index.col] == c) {
                     return index;
