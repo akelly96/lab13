@@ -49,7 +49,7 @@ public:
         cipher.push_back(new Cipher01); // add other 7 Ciphers
         cipher.push_back(new Cipher02);
         cipher.push_back(new Cipher03);
-    //    cipher.push_back(new Cipher04);
+        cipher.push_back(new Cipher04);
     //    cipher.push_back(new Cipher05);
     //    cipher.push_back(new Cipher06);
     //    cipher.push_back(new Cipher07);
