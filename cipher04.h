@@ -15,8 +15,8 @@ class Cipher04 : public Cipher
 public:
     virtual std::string getPseudoAuth() { return "Will Johnson"; }
     virtual std::string getCipherName() { return "playfair"; }
-    virtual std::string getEncryptAuth() { return "encrypt author"; }
-    virtual std::string getDecryptAuth() { return "decrypt author"; }
+    virtual std::string getEncryptAuth() { return "Will Johnson"; }
+    virtual std::string getDecryptAuth() { return "Will Johnson"; }
 
     /***********************************************************
      * GET CIPHER CITATION
@@ -111,6 +111,7 @@ public:
                     plainConverted[i+1] = key[get<0>(coords2)][0];
             }
 
+            //if the letters are in the same column
             else if (get<1>(coords1) == get<1>(coords2))
             {
                 //change first letter of the pair
@@ -153,7 +154,7 @@ public:
 
         std::string plainText = cipherText;
 
-        //now to encrypt
+        //now to decrypt
         for (int i = 0; i < cipherText.length(); i += 2)
         {
             //search the cipher for the next two letters' coordinates
@@ -175,36 +176,35 @@ public:
             else if (get<0>(coords1) == get<0>(coords2))
             {
                 //change first letter of the pair
-                if (get<1>(coords1) != 4)
-                    plainText[i] = key[get<0>(coords1)][get<1>(coords1) + 1];
+                if (get<1>(coords1) != 0)
+                    plainText[i] = key[get<0>(coords1)][get<1>(coords1) - 1];
                 else
-                    plainText[i] = key[get<0>(coords1)][0];
+                    plainText[i] = key[get<0>(coords1)][4];
 
                 //change second letter of the pair
-                if (get<1>(coords2) != 4)
-                    plainText[i + 1] = key[get<0>(coords2)][get<1>(coords2) + 1];
+                if (get<1>(coords2) != 0)
+                    plainText[i + 1] = key[get<0>(coords2)][get<1>(coords2) - 1];
                 else
-                    plainText[i + 1] = key[get<0>(coords2)][0];
+                    plainText[i + 1] = key[get<0>(coords2)][4];
             }
 
+            //if the letters are in the same column
             else if (get<1>(coords1) == get<1>(coords2))
             {
                 //change first letter of the pair
-                if (get<0>(coords1) != 4)
-                    plainText[i] = key[get<0>(coords1) + 1][get<1>(coords1)];
+                if (get<0>(coords1) != 0)
+                    plainText[i] = key[get<0>(coords1) - 1][get<1>(coords1)];
                 else
-                    plainText[i] = key[0][get<0>(coords1)];
+                    plainText[i] = key[4][get<0>(coords1)];
 
                 //change second letter of the pair
-                if (get<0>(coords2) != 4)
-                    plainText[i + 1] = key[get<0>(coords2) + 1][get<1>(coords2)];
+                if (get<0>(coords2) != 0)
+                    plainText[i + 1] = key[get<0>(coords2) - 1][get<1>(coords2)];
                 else
-                    plainText[i + 1] = key[0][get<0>(coords2)];
+                    plainText[i + 1] = key[4][get<0>(coords2)];
             }
         }
 
-        //std::string plainText = cipherText;
-        // TODO - Add your code here
         return plainText;
     }
 
