@@ -6,6 +6,8 @@
 #ifndef CIPHER04_H
 #define CIPHER04_H
 #include <tuple>
+#include <iostream>
+using namespace std;
 
 /********************************************************************
  * CLASS
@@ -14,7 +16,7 @@ class Cipher04 : public Cipher
 {
 public:
     virtual std::string getPseudoAuth() { return "Will Johnson"; }
-    virtual std::string getCipherName() { return "playfair"; }
+    virtual std::string getCipherName() { return "Polybius Square Cipher"; }
     virtual std::string getEncryptAuth() { return "Will Johnson"; }
     virtual std::string getDecryptAuth() { return "Will Johnson"; }
 
@@ -24,11 +26,11 @@ public:
      ***********************************************************/
     virtual std::string getCipherCitation()
     {
-        std::string cited;
-        cited += "Practical Cryptography, ";
-        cited += "http://practicalcryptography.com/ciphers/classical-era/playfair/, ";
-        cited += "Follow the instructions under 'The Algorithm'";
-        return cited;
+        std::string s;
+        s += "crypto.interactive-maths.com (2013), ";
+        s += "\"Polybius-Square Cipher\", \n   retrieved: ";
+        s += "http://practicalcryptography.com/ciphers/classical-era/polybius-square/";
+        return s;
     }
 
     /**********************************************************
@@ -41,17 +43,68 @@ public:
 
         // TODO: please format your pseudocode
         // The encrypt pseudocode
-        str = "encrypt(plaintext, password)";
-        str += "useable = jToI(password)"; //convert j to i for cipher to work
-        str += "key = generateKey(password)";
-        str += "";
+        str = "adjustedPlainText <- removeSpaces(plainText)\n";
+        str += "key[5][5] <- GenerateKey(password)\n";
+        str += "FOR i is all index of adjustedPlainText\n";
+        str += "   coords = getCoords(adjustedPlainText[i], key);\n";
+        str += "   switch(get<0>(coords))\n";
+        str += "      CASE 0\n";
+        str += "         cipherText += 'A'\n";
+        str += "      CASE 1\n";
+        str += "         cipherText += 'B'\n";
+        str += "      CASE 2\n";
+        str += "         cipherText += 'C'\n";
+        str += "      CASE 3\n";
+        str += "         cipherText += 'D'\n";
+        str += "      CASE 4\n";
+        str += "         cipherText += 'E'\n";
+        str += "   switch(get<1>(coords))\n";
+        str += "      CASE 0\n";
+        str += "         cipherText += 'A'\n";
+        str += "      CASE 1\n";
+        str += "         cipherText += 'B'\n";
+        str += "      CASE 2\n";
+        str += "         cipherText += 'C'\n";
+        str += "      CASE 3\n";
+        str += "         cipherText += 'D'\n";
+        str += "      CASE 4\n";
+        str += "         cipherText += 'E'\n";
+        str += "RETURN cipherText\n\n";
 
         // The decrypt pseudocode
-        str += "insert the decryption pseudocode\n";
+        str += "key[5][5] <- GenerateKey(password)\n";
+        str += "coords <- make_tuple(0, 0)\n";
+        str += "FOR i is all index in cipherText\n";
+        str += "   SWITCH (cipherText[i])\n";
+        str += "      CASE 'A'\n";
+        str += "         IF i is even\n";
+        str += "            get<0>(coords) = 0\n";
+        str += "         IF i is odd\n";
+        str += "            get<1>(coords) = 0\n";
+        str += "      CASE 'B'\n";
+        str += "         IF i is even\n";
+        str += "            get<0>(coords) = 1\n";
+        str += "         IF i is odd\n";
+        str += "            get<1>(coords) = 1\n";
+        str += "      CASE 'C'\n";
+        str += "         IF i is even\n";
+        str += "            get<0>(coords) = 2\n";
+        str += "         IF i is odd\n";
+        str += "            get<1>(coords) = 2\n";
+        str += "      CASE 'D'\n";
+        str += "         IF i is even\n";
+        str += "            get<0>(coords) = 3\n";
+        str += "         IF i is odd\n";
+        str += "            get<1>(coords) = 3\n";
+        str += "      CASE 'E'\n";
+        str += "         IF i is even\n";
+        str += "            get<0>(coords) = 4\n";
+        str += "         IF i is odd\n";
+        str += "            get<1>(coords) = 4\n";
+        str += "   IF i is odd\n";
+        str += "      plainText += key[get<0>(coords)][get<1>(coords)]\n";
+        str += "RETURN plainText\n\n";
 
-
-        //helper routine
-        str += "";
 
         return str;
     }
@@ -63,72 +116,50 @@ public:
     virtual std::string encrypt(const std::string& plainText,
         const std::string& password)
     {
-        std::string plainConverted = plainText;
-        plainConverted = jToI(plainConverted); //convert all js to is
-        plainConverted = handleDoubles(plainConverted); //replace all doubles with x
-
-        if (plainConverted.length() % 2 != 0)//make sure the plaintext has an even number of letters
-            plainConverted += "x";           //ie hammer becomes hamxer
-
-        std::string passwordConverted = password;
-        passwordConverted = jToI(passwordConverted); //convert all js to is for password
-        
-        char** key = generateKey(passwordConverted); //generate the cipher key
-
-        //std::string cipherText = plainConverted;
-
-        //now to encrypt
-        for (int i = 0; i < plainConverted.length(); i += 2)
+        std::string cipherText;
+        std::string adjustedPlainText = removeSpaces(plainText);
+        char key[5][5];
+        GenerateKey(password, key);
+        for (int i = 0; i < adjustedPlainText.size(); i++)
         {
-            //search the cipher for the next two letters' coordinates
-            auto coords1 = getCoords(plainConverted[i], key);
-            auto coords2 = getCoords(plainConverted[i+1], key);
-
-            //if the letters aren't in the same row or column
-            if (get<0>(coords1) != get<0>(coords2) && get<1>(coords1) != get<1>(coords2))
+            auto coords = getCoords(adjustedPlainText[i], key);
+            switch (get<0>(coords))
             {
-                int temp = get<1>(coords1);
-                get<1>(coords1) = get<1>(coords2);
-                get<1>(coords2) = temp;
-
-                plainConverted[i] = key[get<0>(coords1)][get<1>(coords1)];//change first letter
-                plainConverted[i+1] = key[get<0>(coords2)][get<1>(coords2)];//change second letter
+            case 0:
+                cipherText += 'A';
+                break;
+            case 1:
+                cipherText += 'B';
+                break;
+            case 2:
+                cipherText += 'C';
+                break;
+            case 3:
+                cipherText += 'D';
+                break;
+            case 4:
+                cipherText += 'E';
+                break;
             }
-
-            //if the letters are on the same row
-            else if (get<0>(coords1) == get<0>(coords2))
+            switch (get<1>(coords))
             {
-                //change first letter of the pair
-                if (get<1>(coords1) != 4)
-                    plainConverted[i] = key[get<0>(coords1)][get<1>(coords1) + 1];
-                else
-                    plainConverted[i] = key[get<0>(coords1)][0];
-
-                //change second letter of the pair
-                if (get<1>(coords2) != 4)
-                    plainConverted[i+1] = key[get<0>(coords2)][get<1>(coords2) + 1];
-                else
-                    plainConverted[i+1] = key[get<0>(coords2)][0];
-            }
-
-            //if the letters are in the same column
-            else if (get<1>(coords1) == get<1>(coords2))
-            {
-                //change first letter of the pair
-                if (get<0>(coords1) != 4)
-                    plainConverted[i] = key[get<0>(coords1) + 1][get<1>(coords1)];
-                else
-                    plainConverted[i] = key[0][get<0>(coords1)];
-
-                //change second letter of the pair
-                if (get<0>(coords2) != 4)
-                    plainConverted[i+1] = key[get<0>(coords2) + 1][get<1>(coords2)];
-                else
-                    plainConverted[i+1] = key[0][get<0>(coords2)];
+            case 0:
+                cipherText += 'A';
+                break;
+            case 1:
+                cipherText += 'B';
+                break;
+            case 2:
+                cipherText += 'C';
+                break;
+            case 3:
+                cipherText += 'D';
+                break;
+            case 4:
+                cipherText += 'E';
+                break;
             }
         }
-
-        std::string cipherText = plainConverted;
 
         return cipherText;
     }
@@ -140,159 +171,99 @@ public:
     virtual std::string decrypt(const std::string& cipherText,
         const std::string& password)
     {
-        //std::string cipherConverted = cipherText;
-        //cipherConverted = jToI(cipherConverted); //convert all js to is
-        //plainConverted = handleDoubles(plainConverted); //replace all doubles with x
-
-        //if (plainConverted.length() % 2 != 0)//make sure the plaintext has an even number of letters
-            //plainConverted += "x";           //ie hammer becomes hamxer
-
-        std::string passwordConverted = password;
-        passwordConverted = jToI(passwordConverted); //convert all js to is for password
-
-        char** key = generateKey(passwordConverted); //generate the cipher key
-
-        std::string plainText = cipherText;
-
-        //now to decrypt
-        for (int i = 0; i < cipherText.length(); i += 2)
+        std::string plainText;
+        char key[5][5];
+        GenerateKey(password, key);
+        auto coords = std::make_tuple(0, 0);
+        for (int i = 0; i < cipherText.size(); i++)
         {
-            //search the cipher for the next two letters' coordinates
-            auto coords1 = getCoords(plainText[i], key);
-            auto coords2 = getCoords(plainText[i + 1], key);
-
-            //if the letters aren't in the same row or column
-            if (get<0>(coords1) != get<0>(coords2) && get<1>(coords1) != get<1>(coords2))
+            switch (cipherText[i])
             {
-                int temp = get<1>(coords1);
-                get<1>(coords1) = get<1>(coords2);
-                get<1>(coords2) = temp;
-
-                plainText[i] = key[get<0>(coords1)][get<1>(coords1)];//change first letter
-                plainText[i + 1] = key[get<0>(coords2)][get<1>(coords2)];//change second letter
+            case 'A':
+                if (i % 2 == 0)
+                    get<0>(coords) = 0;
+                else
+                    get<1>(coords) = 0;
+                break;
+            case 'B':
+                if (i % 2 == 0)
+                    get<0>(coords) = 1;
+                else
+                    get<1>(coords) = 1;
+                break;
+            case 'C':
+                if (i % 2 == 0)
+                    get<0>(coords) = 2;
+                else
+                    get<1>(coords) = 2;
+                break;
+            case 'D':
+                if (i % 2 == 0)
+                    get<0>(coords) = 3;
+                else
+                    get<1>(coords) = 3;
+                break;
+            case 'E':
+                if (i % 2 == 0)
+                    get<0>(coords) = 4;
+                else
+                    get<1>(coords) = 4;
+                break;
             }
-
-            //if the letters are on the same row
-            else if (get<0>(coords1) == get<0>(coords2))
-            {
-                //change first letter of the pair
-                if (get<1>(coords1) != 0)
-                    plainText[i] = key[get<0>(coords1)][get<1>(coords1) - 1];
-                else
-                    plainText[i] = key[get<0>(coords1)][4];
-
-                //change second letter of the pair
-                if (get<1>(coords2) != 0)
-                    plainText[i + 1] = key[get<0>(coords2)][get<1>(coords2) - 1];
-                else
-                    plainText[i + 1] = key[get<0>(coords2)][4];
-            }
-
-            //if the letters are in the same column
-            else if (get<1>(coords1) == get<1>(coords2))
-            {
-                //change first letter of the pair
-                if (get<0>(coords1) != 0)
-                    plainText[i] = key[get<0>(coords1) - 1][get<1>(coords1)];
-                else
-                    plainText[i] = key[4][get<0>(coords1)];
-
-                //change second letter of the pair
-                if (get<0>(coords2) != 0)
-                    plainText[i + 1] = key[get<0>(coords2) - 1][get<1>(coords2)];
-                else
-                    plainText[i + 1] = key[4][get<0>(coords2)];
-            }
+            if (i % 2 == 1)
+                plainText += key[get<0>(coords)][get<1>(coords)];
         }
 
         return plainText;
     }
+private:
+    /*********************************************************
+    * remove duplicates
+    * goes through a string and removes duplicate values
+    *********************************************************/
+    std::string removeDuplicate(std::string originalPassword, std::string password)
+
+    {
+        // Used as index in the modified string 
+        int index = 0;
+        char temp[25] = { '\0' };
+        // Traverse through all characters 
+        for (int i = 0; i < originalPassword.size(); i++) {
+
+            // Check if str[i] is present before it   
+            for (int j = i + 1; j < password.size() - 1; j++)
+                if (originalPassword[i] == password[j])
+                {
+                    password.erase(j, 1);
+                    break;
+                }
+        }
+        return password;
+    }
 
     /**********************************************************
-     * GENERATEKEY
-     * TODO: generate the cipher's key based on the users
-     * password
-     **********************************************************/
-    virtual char** generateKey(const std::string& password)
+    * Generate Key
+    * generates the key to use in the encryption and decryption
+    **********************************************************/
+    void GenerateKey(std::string password, char key[][5])
     {
-        std::string alpha = "abcdefghiklmnopqrstuvwxyz";
-        char** key = new char*[5];
-        int row = 0;
-        int col = 0;
-        for (int i = 0; i < password.length(); i++)
+        std::string originalPassword = password;
+        password += "abcdefghiklmnopqrstuvwxyz";
+        std::string plain = removeDuplicate(originalPassword, password);
+        int index = 0;
+        for (int col = 0; col < 5; col++)
         {
-            std::size_t found = alpha.find_first_of(password[i]);
-            if (found != std::string::npos)
-                alpha.erase(found);//if password[i] was found, erase it
-
-            else
-                break;//if password[i] was not found, break the for loop and fill key with alpha
-
-            key[row][col] = password[i];
-            if (i % 4 != 0)
-                col++;
-            else
+            for (int row = 0; row < 5; row++)
             {
-                row++;
-                col = 0;
+                key[col][row] = plain[index++];
+
             }
         }
 
-        for (int i = 0; i < alpha.length(); i++)
-        {
-            key[row][col] = alpha[i];
-            if (i % 4 != 0)
-                col++;
-            else
-            {
-                row++;
-                col = 0;
-            }
-        }
 
-        return key;
     }
 
-    /**********************************************************
-     * JTOI
-     * Replaces all the Js with Is 
-     **********************************************************/
-    virtual std::string jToI(std::string& str)
-    {
-        /*for (int i = 0; i < str.length(); i++)
-        {
-            if (str[i] == 'j')
-                str[i] = 'i';
-        }*/
-        std::size_t found = str.find("j");
-        while (found != std::string::npos)
-        {
-            str[found] = 'i';
-            found = str.find("j");
-        }
-        return str;
-    }
-
-    /**********************************************************
-     * HANDLEDOUBLES
-     * Replace all repeat letters with an x
-     **********************************************************/
-    virtual std::string handleDoubles(std::string& str)
-    {
-        for (int i = 1; i < str.length(); i++)
-        {
-            if (str[i] == str[i - 1])
-                str[i] = 'x';
-        }
-        
-        return str;
-    }
-
-    /**********************************************************
-     * SEARCHCIPHER
-     * Find the coordinates of a given letter and return them.
-     **********************************************************/
-    virtual std::tuple <int, int> getCoords(char letter, char** &key)
+    std::tuple <int, int> getCoords(char letter, char key[][5])
     {
         auto coords = std::make_tuple(0, 0);
         for (int i = 0; i < 5; i++)
@@ -300,14 +271,17 @@ public:
             for (int j = 0; j < 5; j++)
                 if (letter == key[i][j])
                 {
-                    //coords[0] = i;
-                    //coords[1] = j;
                     get<0>(coords) = i;
                     get<1>(coords) = j;
                 }
         }
 
         return coords;
+    }
+
+    std::string removeSpaces(std::string plainText) {
+        plainText.erase(std::remove(plainText.begin(), plainText.end(), ' '), plainText.end());
+        return plainText;
     }
 };
 
